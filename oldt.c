@@ -8,6 +8,13 @@
 
 // TODO Implement function to check servers certificate
 
+/**
+ * Function: set_flag
+ * 
+ * Sets the flag for a corresponding command line argument.
+ *
+ * Returns: 0 on success, -1 on failure.
+ **/
 int set_flag( int flag )
 {
 	if( cmd->argflag & (1 << flag) )										// Check for duplicate
@@ -59,6 +66,13 @@ int set_flag( int flag )
 	return 0;
 }
 
+/**
+ * Function: parse_hostname
+ * 
+ * Converts a string into a seperated host:post configuration.
+ *
+ * Returns: 0 on success, -1 on failure.
+ **/
 int parse_hostname( char *str )
 {
 	char *token = strchr( str, ':' );
@@ -74,16 +88,13 @@ int parse_hostname( char *str )
 	return 0;
 }
 
-int next_arg( int index, int argc, char **argv )
-{
-	while( ++index < argc )
-	{
-		if( *argv[index] == '-' && strlen(argv[index]) == 2 ) break;
-	}
-
-	return index;
-}
-
+/**
+ * Function: usage
+ * 
+ * Outputs the expected parameters for a given argument in case of error.
+ *
+ * Returns: Void.
+ **/
 void usage( char arg )
 {
 	BIO_printf( out, "[ERROR] Argument %c usage:\n", arg );
@@ -120,6 +131,14 @@ void usage( char arg )
 	}
 }
 
+/**
+ * Function: check_arg
+ * 
+ * Determines if an argument matches its required parameters, otherwise
+ * notifies the user about the correct usage.
+ *
+ * Returns: 0 on success, -1 on failure.
+ **/
 int check_arg( char arg, int opts )
 {
 	// Check if arguments are in the correct format
@@ -132,11 +151,43 @@ int check_arg( char arg, int opts )
 	return 0;
 }
 
+/**
+ * Function: is_arg
+ * 
+ * Determine if a string is in the correct argument format.
+ *
+ * Returns: Boolean.
+ **/
 bool is_arg( char *arg )
 {
 	return ( *arg == '-' && *(arg + 2) == '\0' );
 }
 
+/**
+ * Function: next_arg
+ * 
+ * Given an index, the function finds the next available argument.
+ *
+ * Returns: Integer index to next argument.
+ **/
+int next_arg( int index, int argc, char **argv )
+{
+	while( ++index < argc )
+	{
+		if( is_arg(argv[index]) ) break;
+	}
+
+	return index;
+}
+
+/**
+ * Function: parse_args
+ * 
+ * Parses the command line argument supplied at execution time and filters them
+ * with respect to the validity of each argument.
+ *
+ * Returns: 0 on success, -1 on failure.
+ **/
 int parse_args( int argc, char **argv )
 {
 	int index = 1;
@@ -219,6 +270,14 @@ int parse_args( int argc, char **argv )
 	return 0;
 }
 
+/**
+ * Function: client_start
+ * 
+ * Initializes the client by checking the required parameters, and executing
+ * required methods.
+ *
+ * Returns: 0 on success, -1 on failure.
+ **/
 int client_start()
 {
 	if( cmd->hostport == NULL || cmd->cert_idt == NULL )
@@ -272,6 +331,13 @@ int client_start()
 	return 0;
 }
 
+/**
+ * Function: init_client
+ * 
+ * Initialises the client by allocating memory and instantiating variables.
+ *
+ * Returns: Void.
+ **/
 void init_client()
 {
 	out	= BIO_new_fp( stdout, BIO_NOCLOSE );		// Init output
@@ -282,6 +348,13 @@ void init_client()
 	cmd->lock = 0;
 }
 
+/**
+ * Function: close_client
+ * 
+ * Frees allocated memory used by the global client variables.
+ *
+ * Returns: Void.
+ **/
 void close_client()
 {
 	BIO_free_all( out );
