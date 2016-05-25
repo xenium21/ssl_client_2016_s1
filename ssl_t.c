@@ -70,8 +70,15 @@ int ssl_start_link( char *hostname, int port, char *certname )
 		return -1;
 	}
 
-	SSL_CTX_set_options( ctx, SSL_OP_NO_SSLv2 );
+	SSL_CTX_set_options( ctx, SSL_OP_NO_SSLv2 ); // TODO reset
 	SSL_CTX_set_options( ctx, SSL_OP_CIPHER_SERVER_PREFERENCE );
+
+	if( SSL_CTX_use_certificate_file(ctx, certname, SSL_FILETYPE_PEM) != 1 )
+	{
+		BIO_printf( out, "[ERROR] Certificate file: %s is not valid\n", certname );
+		return -1;
+	}
+
 	/*if( SSL_CTX_set_cipher_list( ctx, "AES128-SHA" ) != 1 )
 	{
 		BIO_printf( out, "[ERROR] Could not load cipher\n" );
@@ -81,11 +88,18 @@ int ssl_start_link( char *hostname, int port, char *certname )
 	ssl = SSL_new( ctx );
 
 	// Set the users certificate
-	if( !SSL_use_certificate_file(ssl, certname, SSL_FILETYPE_PEM) )
+	
+	/*if( SSL_use_certificate_file(ssl, certname, SSL_FILETYPE_PEM) != 1 )
 	{
 		BIO_printf( out, "[ERROR] Certificate file: %s is not valid\n", certname );
 		return -1;
-	}
+	}*/
+
+	/*if( SSL_set_cipher_list( ssl, "AES128-SHA" ) != 1 )
+	{
+		BIO_printf( out, "[ERROR] Could not load cipher\n" );
+		return -1;
+	}*/
 
 	server = tcp_socket_con( hostname, port );
 
