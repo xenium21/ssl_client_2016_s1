@@ -292,3 +292,20 @@ int ssl_send_string( char *str )
 	
 	return 0;
 }
+
+int ssl_reply( char code )
+{
+	char reply;
+
+	SSL_write( ssl, &code, 1 );
+
+	SSL_read( ssl, &reply, 1 );
+
+	// TODO implement error responses
+	if( reply != 'k' )
+	{
+		return -1;
+	}
+
+	return 0;
+}
