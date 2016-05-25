@@ -282,6 +282,10 @@ int parse_args( int argc, char **argv )
  **/
 int client_start()
 {
+	char *resp = malloc(sizeof(char) * 11);
+	char *send = malloc(sizeof(char));
+	send[0] = 'f';
+
 	if( cmd->hostport == NULL || cmd->cert_idt == NULL )
 	{
 		BIO_printf( out, "[ERROR] Required arguments to connect are invalid\n" );
@@ -307,10 +311,12 @@ int client_start()
 	{
 		
 		// Send a hello
-
+		SSL_write( ssl, send, 1 );
 		// Get reply
+		SSL_read( ssl, resp, 11 );
 
-		switch( cmd->command )	// Process command
+		BIO_printf( out, "%s", resp );
+		/*switch( cmd->command )	// Process command
 		{
 			case A_OPT:
 				//ssl_send_file( cmd->fname );
@@ -325,7 +331,7 @@ int client_start()
 				//ssl_send_string( cmd->fname );
 				// TODO
 				break;
-		}
+		}*/
 	}
 
 	ssl_close_link();	// Free SSL
@@ -360,6 +366,7 @@ void init_client()
 void close_client()
 {
 	BIO_free_all( out );
+	cert = BIO_new(BIO_s_file());
 
 	free( cmd );
 }

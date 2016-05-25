@@ -68,7 +68,7 @@ SSL			*ssl;			// SSL Link
 ARGS		*cmd;
 
 // IO streams
-//BIO		*cert;
+BIO		*cert;
 BIO			*out;
 
 // File streams

@@ -53,8 +53,8 @@ int ssl_start_link( char *hostname, int port, char *certname )
 	ERR_load_BIO_strings();
 	ERR_load_crypto_strings();
 	SSL_load_error_strings();
-	//sslmethod = SSLv3_client_method();
-	sslmethod = TLSv1_client_method();	
+	sslmethod = SSLv3_client_method();
+	//sslmethod = TLSv1_client_method();	
 
 	//cert = BIO_new( BIO_s_file() );
 
@@ -70,8 +70,8 @@ int ssl_start_link( char *hostname, int port, char *certname )
 		return -1;
 	}
 
-	SSL_CTX_set_options( ctx, SSL_OP_NO_SSLv2 ); // TODO reset
-	SSL_CTX_set_options( ctx, SSL_OP_CIPHER_SERVER_PREFERENCE );
+	//SSL_CTX_set_options( ctx, SSL_OP_NO_SSLv2 ); // TODO reset
+	//SSL_CTX_set_options( ctx, SSL_OP_CIPHER_SERVER_PREFERENCE );
 
 	if( SSL_CTX_use_certificate_file(ctx, certname, SSL_FILETYPE_PEM) != 1 )
 	{
@@ -111,10 +111,10 @@ int ssl_establish_link()
 	int ret;
 
 	SSL_set_fd( ssl, server );
-
+	
 	if( (ret = SSL_connect( ssl )) != 1 )
 	{
-		BIO_printf( out, "[ERROR] SSL Error: %s %i using %s - %s\n", strerror(SSL_get_error(ssl, ret)), ret, SSL_get_version(ssl), SSL_get_cipher(ssl) );
+		BIO_printf( out, "[ERROR] SSL Error: %s %i using %s - %s\n", strerror(SSL_get_error(ssl, ret)), ret, SSL_get_version(ssl), SSL_get_cipher_name(ssl) );
 		return -1;
 	}
 	else
@@ -123,7 +123,7 @@ int ssl_establish_link()
 	}
 
 	// TODO Obtain server certificate and verify
-	if( SSL_get_peer_certificate( ssl ) != NULL )
+	/*if( SSL_get_peer_certificate( ssl ) != NULL )
 	{
 		if( SSL_get_verify_result( ssl ) != X509_V_OK )
 		{
@@ -135,7 +135,7 @@ int ssl_establish_link()
 	{
 		BIO_printf( out, "[ERROR] Cannot obtain server certificate\n" );
 		return -1;
-	}
+	}*/
 
 	return 0;
 }
