@@ -53,7 +53,8 @@ int ssl_start_link( char *hostname, int port, char *certname )
 	ERR_load_BIO_strings();
 	ERR_load_crypto_strings();
 	SSL_load_error_strings();
-	sslmethod = SSLv3_client_method();
+	//sslmethod = SSLv3_client_method();
+	sslmethod = TLSv1_client_method();	
 
 	//cert = BIO_new( BIO_s_file() );
 
@@ -70,6 +71,12 @@ int ssl_start_link( char *hostname, int port, char *certname )
 	}
 
 	SSL_CTX_set_options( ctx, SSL_OP_NO_SSLv2 );
+	SSL_CTX_set_options( ctx, SSL_OP_CIPHER_SERVER_PREFERENCE );
+	/*if( SSL_CTX_set_cipher_list( ctx, "AES128-SHA" ) != 1 )
+	{
+		BIO_printf( out, "[ERROR] Could not load cipher\n" );
+		return -1;
+	}*/
 
 	ssl = SSL_new( ctx );
 
@@ -87,11 +94,13 @@ int ssl_start_link( char *hostname, int port, char *certname )
 
 int ssl_establish_link()
 {
+	int ret;
+
 	SSL_set_fd( ssl, server );
 
-	if( SSL_connect( ssl ) != 1 )
+	if( (ret = SSL_connect( ssl )) != 1 )
 	{
-		BIO_printf( out, "[ERROR] Could not negotiate SSL session to host\n" );
+		BIO_printf( out, "[ERROR] SSL Error: %s %i using %s - %s\n", strerror(SSL_get_error(ssl, ret)), ret, SSL_get_version(ssl), SSL_get_cipher(ssl) );
 		return -1;
 	}
 	else
