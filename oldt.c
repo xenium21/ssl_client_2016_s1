@@ -17,7 +17,8 @@
  **/
 int set_flag( int flag )
 {
-	if( cmd->argflag & (1 << flag) )										// Check for duplicate
+	// Check for duplicate
+	if( cmd->argflag & (1 << flag) )
 	{
 		BIO_printf( out, "[ERROR] Duplicate argument\n" );
 		return -1;
@@ -35,9 +36,9 @@ int set_flag( int flag )
 			cmd->command = flag;
 		}
 	}
-
-	// Test commands
-	switch( flag )															// Set locking mechanisms
+	
+	// Set locking mechanisms
+	switch( flag )
 	{
 		case A_OPT:
 			cmd->lock = ALOCK;			
@@ -199,8 +200,9 @@ int parse_args( int argc, char **argv )
 	{
 		next = next_arg( index, argc, argv );
 		opts = (next - index) - 1;
-
-		if( !is_arg( argv[index] ) )									// Not a valid argument format
+		
+		// Check for valid argument format
+		if( !is_arg( argv[index] ) )
 		{
 			BIO_printf( out, "[ERROR] Incorrect format for argument\n" );	
 			return -1;
@@ -244,7 +246,7 @@ int parse_args( int argc, char **argv )
 				break;
 		}
 
-		if( set_flag( flag ) ) return -1;		// Check any collisions of args
+		if( set_flag( flag ) ) return -1;	// Check any collisions of args
 
 		index = next;
 	}
@@ -299,16 +301,16 @@ int client_start()
 
 	BIO_printf( out, "[CLIENT] Initiating transaction\n" );
 
-	ssl_start_link( hostname, port, cmd->cert_idt );			// May need to apply htonl
+	ssl_start_link( hostname, port, cmd->cert_idt );	// TODO May need to apply htonl
 
-	if( !ssl_establish_link() )									// Init SSL
+	if( !ssl_establish_link() )	// Init SSL
 	{
 		
 		// Send a hello
 
 		// Get reply
 
-		switch( cmd->command )									// Process command
+		switch( cmd->command )	// Process command
 		{
 			case A_OPT:
 				//ssl_send_file( cmd->fname );
@@ -326,7 +328,7 @@ int client_start()
 		}
 	}
 
-	ssl_close_link();											// Free SSL
+	ssl_close_link();	// Free SSL
 
 	return 0;
 }
@@ -340,9 +342,9 @@ int client_start()
  **/
 void init_client()
 {
-	out	= BIO_new_fp( stdout, BIO_NOCLOSE );		// Init output
+	out	= BIO_new_fp( stdout, BIO_NOCLOSE );	// Init output
 
-	cmd = malloc( sizeof(ARGS) );					// Allocate memory for arguments
+	cmd = malloc( sizeof(ARGS) );	// Allocate memory for arguments
 	cmd->command = -1;
 	cmd->argflag = 0;
 	cmd->lock = 0;

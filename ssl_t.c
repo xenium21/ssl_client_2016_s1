@@ -277,7 +277,7 @@ int ssl_send_file( char *filename )
  **/
 int ssl_send_string( char *str )
 {
-	char buffer[64];				// 64 character limit
+	char buffer[64];	// 64 character limit
 
 	strncpy( buffer, str, 64 );
 
