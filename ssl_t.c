@@ -37,7 +37,7 @@ int tcp_socket_con( char *hostname, int port )
 
 	if( connect(sockfd, (struct sockaddr *) &dest_addr, sizeof(struct sockaddr)) != 0 )
 	{
-		BIO_printf( out, "[ERROR] Cannot connect to host: %s on port %i\n", hostname, port );
+		BIO_printf( out, "[ERROR] Connection: %s: %s on port %i\n", strerror(errno), hostname, port );
 		return -1;
 	}
 

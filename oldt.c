@@ -342,7 +342,7 @@ int client_start()
  **/
 void init_client()
 {
-	out	= BIO_new_fp( stdout, BIO_NOCLOSE );	// Init output
+	out = BIO_new_fp( stdout, BIO_NOCLOSE );	// Init output
 
 	cmd = malloc( sizeof(ARGS) );	// Allocate memory for arguments
 	cmd->command = -1;
