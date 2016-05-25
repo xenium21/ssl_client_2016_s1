@@ -126,11 +126,6 @@ int ssl_close_link()
 		BIO_printf( out, "[CLIENT] Closing SSL Link\n" );
 	}
 
-	/*if( server_cert )
-	{
-		X509_free( server_cert );
-	}*/
-
 	if( server >= 0 )
 	{
 		close( server );
