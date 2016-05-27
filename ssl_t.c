@@ -166,7 +166,7 @@ int ssl_recv_buffer()
 			break;
 		}
 
-		BIO_printf( out, "%s\n", linebuffer );
+		BIO_printf( out, "%s\n", linebuffer );		// Output line buffer
 		lines++;
 	}
 
@@ -191,7 +191,7 @@ int ssl_recv_file( char *filename )
 	// Read stream until complete
 	do
 	{
-		// TODO no protection available
+		// Read SSLBUFF bytes from file to buffer TODO no error protection
 		read = SSL_read( ssl, f_buff, SSLBUFF );
 
 		// Write to file
@@ -206,7 +206,7 @@ int ssl_recv_file( char *filename )
 	// Close file
 	fclose( file );
 	
-	ssl_communicate( reply );
+	//ssl_communicate( reply );
 
 	if( reply == 'k' )
 	{
@@ -249,7 +249,7 @@ int ssl_send_file( char *filename )
 	// Close file
 	fclose( file );
 
-	ssl_communicate( reply );
+	//ssl_communicate( reply );
 	
 	if( reply == 'k' )
 	{

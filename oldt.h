@@ -77,7 +77,7 @@ ARGS		*cmd;
 
 // IO streams
 BIO		*cert;
-BIO			*out;
+BIO		*out;
 
 // File streams
 FILE		*file;
