@@ -282,9 +282,9 @@ int parse_args( int argc, char **argv )
  **/
 int client_start()
 {
-	char *resp = malloc(sizeof(char) * 11);
-	char *send = malloc(sizeof(char));
-	send[0] = 'f';
+	char command;
+	char response;
+	//char *namelen = malloc(sizeof(char) * 3);
 
 	if( cmd->hostport == NULL || cmd->cert_idt == NULL )
 	{
@@ -305,21 +305,20 @@ int client_start()
 
 	BIO_printf( out, "[CLIENT] Initiating transaction\n" );
 
-	ssl_start_link( hostname, port, cmd->cert_idt );	// TODO May need to apply htonl
+	ssl_start_link( hostname, port, cmd->cert_idt );	// Init SSL
 
-	if( !ssl_establish_link() )	// Init SSL
+	if( !ssl_establish_link() )
 	{
-		
-		// Send a hello
-		SSL_write( ssl, send, 1 );
-		// Get reply
-		SSL_read( ssl, resp, 11 );
+		command = '0' + cmd->command;
+		// Send command to server
+		SSL_write( ssl, &command, 1 );
+		SSL_read( ssl, &response, 1 );
+		BIO_printf( out, "%c\n", response );
 
-		BIO_printf( out, "%s", resp );
-		/*switch( cmd->command )	// Process command
+		switch( cmd->command )	// Process command
 		{
 			case A_OPT:
-				//ssl_send_file( cmd->fname );
+				ssl_send_file(cmd->fname);
 				break;
 			case F_OPT:
 				//ssl_recv_file( cmd->fname );
@@ -329,9 +328,8 @@ int client_start()
 				break;
 			case V_OPT:
 				//ssl_send_string( cmd->fname );
-				// TODO
 				break;
-		}*/
+		}
 	}
 
 	ssl_close_link();	// Free SSL
@@ -349,7 +347,7 @@ int client_start()
 void init_client()
 {
 	out = BIO_new_fp( stdout, BIO_NOCLOSE );	// Init output
-
+	cert = BIO_new(BIO_s_file());
 	cmd = malloc( sizeof(ARGS) );	// Allocate memory for arguments
 	cmd->command = -1;
 	cmd->argflag = 0;
@@ -365,9 +363,8 @@ void init_client()
  **/
 void close_client()
 {
-	BIO_free_all( out );
-	cert = BIO_new(BIO_s_file());
-
+	BIO_free_all( cert );
+	
 	free( cmd );
 }
 

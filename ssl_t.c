@@ -54,9 +54,6 @@ int ssl_start_link( char *hostname, int port, char *certname )
 	ERR_load_crypto_strings();
 	SSL_load_error_strings();
 	sslmethod = SSLv3_client_method();
-	//sslmethod = TLSv1_client_method();	
-
-	//cert = BIO_new( BIO_s_file() );
 
 	if( SSL_library_init() < 0 )
 	{
@@ -79,12 +76,6 @@ int ssl_start_link( char *hostname, int port, char *certname )
 		return -1;
 	}
 
-	/*if( SSL_CTX_set_cipher_list( ctx, "AES128-SHA" ) != 1 )
-	{
-		BIO_printf( out, "[ERROR] Could not load cipher\n" );
-		return -1;
-	}*/
-
 	ssl = SSL_new( ctx );
 
 	// Set the users certificate
@@ -92,12 +83,6 @@ int ssl_start_link( char *hostname, int port, char *certname )
 	/*if( SSL_use_certificate_file(ssl, certname, SSL_FILETYPE_PEM) != 1 )
 	{
 		BIO_printf( out, "[ERROR] Certificate file: %s is not valid\n", certname );
-		return -1;
-	}*/
-
-	/*if( SSL_set_cipher_list( ssl, "AES128-SHA" ) != 1 )
-	{
-		BIO_printf( out, "[ERROR] Could not load cipher\n" );
 		return -1;
 	}*/
 
@@ -242,7 +227,9 @@ int ssl_recv_file( char *filename )
 int ssl_send_file( char *filename )
 {
 	size_t read;
-	size_t size;
+	//size_t size;
+
+	if( ssl_send_string( filename ) == -1) return -1;
 
 	// Open file for reading
 	if( (file = fopen( filename, "r" )) == NULL )
@@ -252,13 +239,13 @@ int ssl_send_file( char *filename )
 	}
 
 	// Get size of file
-	stat( filename, &fs_stat );
+	//stat( filename, &fs_stat );
 
 	// Send file size to server TODO no protection
-	SSL_write( ssl, &fs_stat.st_size, sizeof(size_t) );
+	//SSL_write( ssl, &fs_stat.st_size, sizeof(size_t) );
 
-	read = 0;
-	size = fs_stat.st_size;
+	//read = 0;
+	//size = fs_stat.st_size;
 
 	// Exit if the buffer is not filled
 	do
@@ -276,19 +263,20 @@ int ssl_send_file( char *filename )
 			BIO_printf( out, "[ERROR] Problem writing to SSL connection\n" );
 			break;
 		}
-
+		BIO_printf( out,"Sent: %i bytes\n" , (int)read );
 		// Add amount read
-		size -= read;
-	} while( read == SSLBUF );
+		//size -= read;
+	//} while( read == SSLBUF );
+	} while( read < SSLBUF );
 
 	// Close file
 	fclose( file );
 
-	if( size > 0 )
+	/*if( size > 0 )
 	{
 		BIO_printf( out, "[ERROR] A problem occured in the transmission\n" );
 		return -1;
-	}
+	}*/
 
 	BIO_printf( out, "[CLIENT] Sent file: %s to server\n", filename );
 	
@@ -301,18 +289,30 @@ int ssl_send_file( char *filename )
 int ssl_send_string( char *str )
 {
 	char buffer[64];	// 64 character limit
+	char reply;
+	size_t wrote;
 
 	strncpy( buffer, str, 64 );
 
+	BIO_printf( out, "Sent name: %s\n", buffer );
+
 	// Send the buffer over
-	if( SSL_write(ssl, buffer, 64) != 64 )
+	if( (wrote = SSL_write(ssl, buffer, 64)) != 64 )
 	{
-		BIO_printf( out, "[ERROR] Error writing string\n" );
+		//BIO_printf( out, "[ERROR] Error writing string\n" );
+		BIO_printf( out, "[ERROR] Sent undersize buffer\n" );
 		return -1;
 	}
 
 	// TODO Receive a confirmation
+	SSL_read( ssl, &reply, 1 );
 	
+	if( reply != 'k' )
+	{
+		BIO_printf( out, "[ERROR] File exists\n" );
+		return -1;
+	}
+
 	return 0;
 }
 

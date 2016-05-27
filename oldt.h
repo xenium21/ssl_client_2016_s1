@@ -38,7 +38,8 @@
 #define		LLOCK			88
 #define		VLOCK			234
 
-typedef enum { A_OPT, C_OPT, F_OPT, H_OPT, L_OPT, N_OPT, U_OPT, V_OPT } ARGFLAG;
+//typedef enum { A_OPT, C_OPT, F_OPT, H_OPT, L_OPT, N_OPT, U_OPT, V_OPT } ARGFLAG;
+typedef enum { A_OPT, F_OPT, L_OPT, V_OPT, C_OPT, H_OPT, N_OPT, U_OPT } ARGFLAG;
 
 // Structs
 typedef struct
