@@ -152,23 +152,24 @@ int ssl_close_link()
 
 int ssl_recv_buffer()
 {
-	int lines = 0;
-	size_t read;
+	int read;
+	int total;
 	char linebuffer[128];
 
 	// TODO Receive confirmation
 	
-	while( true )
+	do
 	{
-		if( (read = SSL_read(ssl, linebuffer, 128)) == 1 )	// Terminate if an empty line is read
+		total = 0;
+		do
 		{
-			BIO_printf( out, "%i files on record\n", lines );
-			break;
-		}
+			read = SSL_read(ssl, linebuffer, 128);
+			total += read;
+		} while( read );
 
-		BIO_printf( out, "%s\n", linebuffer );		// Output line buffer
-		lines++;
-	}
+		BIO_printf( console, "%s\n", linebuffer );		// Output line buffer
+
+	} while( total > 1 );
 
 	return 0;
 }
@@ -178,9 +179,6 @@ int ssl_recv_file( char *filename )
 	int read = 0;
 	int total;
 	char reply = 'k';
-
-	// Send filename to server
-	//if( ssl_send_string( filename ) == -1) return -1;
 
 	// Open file for writing
 	if( (file = fopen( filename, "w" )) == NULL )
@@ -202,7 +200,7 @@ int ssl_recv_file( char *filename )
 		} while(read);
 		
 		// Write to file
-		if( fwrite( f_buff, sizeof(char), total, file ) != total )
+		if( fwrite( f_buff, sizeof(char), total, stdout ) != total )
 		{
 			BIO_printf( out, "[ERROR] File I/O error for: %s\n", filename );
 			reply = 'w';
@@ -227,9 +225,6 @@ int ssl_send_file( char *filename )
 {
 	size_t read;
 	char reply = 'k';
-	BIO_printf( out, "%s\n", filename );
-	// Send filename to server
-	//if( ssl_send_string( filename ) == -1) return -1;
 
 	// Open file for reading
 	if( (file = fopen( filename, "r" )) == NULL )
@@ -365,34 +360,4 @@ int ssl_communicate( char reply )
 	SSL_read( ssl, &response, 1 );
 
 	return ssl_reply_code( response );
-
-	/*char *response = (char *)malloc(sizeof(char) * 14);
-	char *b = (char *)malloc(sizeof(char) * 14);
-	int read = 0;
-	
-	SSL_write( ssl, &reply, 1 );
-
-	BIO_printf(out, "%i\n", SSL_read( ssl, response, 13 ));
-
-	BIO_printf(out, "%s\n", response);
-
-	SSL_write( ssl, &reply, 1 );
-
-	do
-	{
-		read = SSL_read( ssl, (b+read), 13 );
-		BIO_printf(out, "%i\n", read );
-	} while(read);
-
-	BIO_printf(out, "%s\n", b);*/
-
-	//return -1; TODO BELOW WORKS
-	
-	/*char response;
-
-	SSL_write( ssl, &reply, 1 );
-
-	SSL_read( ssl, &response, 1 );
-
-	return ssl_reply_code( response );*/
 }

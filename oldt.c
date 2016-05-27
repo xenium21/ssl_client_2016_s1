@@ -308,23 +308,24 @@ int client_start()
 	{
 		// Send command to server
 		//ssl_communicate( '0' + cmd->command );
+		ssl_communicate( cmd->command );
 
 		switch( cmd->command )	// Process command
 		{
 			case A_OPT:
-				ssl_communicate( cmd->command );
+				//ssl_communicate( cmd->command );
 				ssl_send_file(cmd->fname);
 				break;
 			case F_OPT:
-				ssl_communicate( cmd->command );
+				//ssl_communicate( cmd->command );
 				ssl_recv_file( cmd->fname );
 				break;
 			case L_OPT:
-				ssl_communicate( cmd->command );
-				//ssl_recv_buffer();
+				//ssl_communicate( cmd->command );
+				ssl_recv_buffer();
 				break;
 			case V_OPT:
-				ssl_communicate( cmd->command );
+				//ssl_communicate( cmd->command );
 				//ssl_send_string( cmd->fname );
 				break;
 		}
@@ -344,7 +345,8 @@ int client_start()
  **/
 void init_client()
 {
-	out = BIO_new_fp( stdout, BIO_NOCLOSE );	// Init output
+	console = BIO_new_fp( stdout, BIO_NOCLOSE );	// Init output
+	out = BIO_new_file("log", "w");
 	cert = BIO_new(BIO_s_file());
 	cmd = malloc( sizeof(ARGS) );	// Allocate memory for arguments
 	cmd->command = -1;
@@ -363,7 +365,9 @@ void init_client()
  **/
 void close_client()
 {
-	BIO_free_all( cert );
+	//BIO_free_all( cert );
+	BIO_free( console );
+	BIO_free( out );
 	// TODO memory not freed?
 	free( cmd );
 }
