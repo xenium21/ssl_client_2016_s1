@@ -176,14 +176,10 @@ int ssl_recv_buffer()
 int ssl_recv_file( char *filename )
 {
 	size_t read;
-	size_t size;
+	char reply = 'k';
 
-	// Get filesize from server
-	if( SSL_read( ssl, &size, sizeof(size_t) ) != sizeof(size_t) )
-	{
-		BIO_printf( out, "[ERROR] Could not receive incoming file size\n" );
-		return -1;
-	}
+	// Send filename to server
+	if( ssl_send_string( filename ) == -1) return -1;
 
 	// Open file for writing
 	if( (file = fopen( filename, "w" )) == NULL )
@@ -196,29 +192,25 @@ int ssl_recv_file( char *filename )
 	do
 	{
 		// TODO no protection available
-		read = SSL_read( ssl, f_buff, read );
+		read = SSL_read( ssl, f_buff, SSLBUFF );
 
 		// Write to file
 		if( fwrite( f_buff, sizeof(char), read, file ) != read )
 		{
 			BIO_printf( out, "[ERROR] File I/O error for: %s\n", filename );
-			fclose( file );
-			return -1;
+			reply = 'w';
+			break;
 		}
-
-		size -= read;
 	} while( read == SSLBUFF );	// Exit if last block is received
 
 	// Close file
 	fclose( file );
 	
-	if( size > 0 )
+	ssl_communicate( reply );
+
+	if( reply == 'k' )
 	{
-		BIO_printf( out, "[ERROR] A problem occured in the transmission\n" );
-	}
-	else
-	{
-		BIO_printf( out, "[CLIENT] Received file: %s\n", filename );
+		BIO_printf( out, "[CLIENT] Received file: %s from server\n", filename );
 	}
 
 	return 0;
@@ -227,6 +219,7 @@ int ssl_recv_file( char *filename )
 int ssl_send_file( char *filename )
 {
 	size_t read;
+	char reply = 'k';
 
 	// Send filename to server
 	if( ssl_send_string( filename ) == -1) return -1;
@@ -241,26 +234,27 @@ int ssl_send_file( char *filename )
 	do
 	{
 		// Read SSLBUFF bytes from file to buffer TODO no error protection
-		/*if( (read = fread( f_buff, sizeof(char), SSLBUFF, file )) < 0 )
-		{
-			BIO_printf( out, "[ERROR] File I/O error for: %s\n", filename );
-			break;
-		}*/
 		read = fread( f_buff, sizeof(char), SSLBUFF, file );
 
 		// Write to SSL connection
 		if( SSL_write(ssl, f_buff, read) != read )
 		{
 			BIO_printf( out, "[ERROR] Problem writing to SSL connection\n" );
+			reply = 't';
 			break;
 		}
-		BIO_printf( out,"Sent: %i bytes\n" , (int)read );
+		//BIO_printf( out,"Sent: %i bytes\n" , (int)read );
 	} while( read == SSLBUFF );
 
 	// Close file
 	fclose( file );
 
-	BIO_printf( out, "[CLIENT] Sent file: %s to server\n", filename );
+	ssl_communicate( reply );
+	
+	if( reply == 'k' )
+	{
+		BIO_printf( out, "[CLIENT] Sent file: %s to server\n", filename );
+	}
 	
 	return 0;
 }
@@ -306,15 +300,27 @@ int ssl_reply_code( char code )
 
 	switch( code )
 	{
-		case 'k':
+		case SSL_OK:
 			ret = 0;
 			break;
-		case 'x':
+		case SSL_TRANSFER:
+			BIO_printf( out, "[ERROR] Transfer error\n" );
+			ret = -1;
+			break;
+		case SSL_READ:
+			BIO_printf( out, "[ERROR] File read error\n" );
+			ret = -1;
+			break;
+		case SSL_WRITE:
+			BIO_printf( out, "[ERROR] File write error\n" );
+			ret = -1;
+			break;
+		case SSL_EXISTS:
 			BIO_printf( out, "[ERROR] File already exists on server\n" );
 			ret = -1;
 			break;
 		default:
-			BIO_printf( out, "[ERROR] Unknown response from server, halting\n" );
+			BIO_printf( out, "[ERROR] Unknown response: %c from server. Halting\n", code );
 			ret = -1;
 			break;
 	}
@@ -322,11 +328,11 @@ int ssl_reply_code( char code )
 	return ret;
 }
 
-int ssl_communicate( char comm )
+int ssl_communicate( char reply )
 {
 	char response;
 
-	SSL_write( ssl, &comm, 1 );
+	SSL_write( ssl, &reply, 1 );
 	SSL_read( ssl, &response, 1 );
 
 	return ssl_reply_code( response );

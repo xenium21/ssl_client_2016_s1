@@ -39,6 +39,12 @@
 #define		LLOCK			88
 #define		VLOCK			234
 
+#define		SSL_OK			'k'
+#define		SSL_EXISTS		'x'
+#define		SSL_TRANSFER		't'
+#define		SSL_READ		'r'
+#define		SSL_WRITE		'w'
+
 //typedef enum { A_OPT, C_OPT, F_OPT, H_OPT, L_OPT, N_OPT, U_OPT, V_OPT } ARGFLAG;
 typedef enum { A_OPT, F_OPT, L_OPT, V_OPT, C_OPT, H_OPT, N_OPT, U_OPT } ARGFLAG;
 

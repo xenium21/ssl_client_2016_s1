@@ -282,10 +282,6 @@ int parse_args( int argc, char **argv )
  **/
 int client_start()
 {
-	//char command;
-	//char response;
-	//char *namelen = malloc(sizeof(char) * 3);
-
 	if( cmd->hostport == NULL || cmd->cert_idt == NULL )
 	{
 		BIO_printf( out, "[ERROR] Required arguments to connect are invalid\n" );
