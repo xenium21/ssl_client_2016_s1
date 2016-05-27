@@ -31,7 +31,8 @@
 #include <openssl/x509.h>
 #include <openssl/x509_vfy.h>
 
-#define		SSLBUF			1024
+#define		SSLBUFF			1024
+#define		SSLCHAR			64
 
 #define		ALOCK			73
 #define		FLOCK			110
@@ -74,8 +75,8 @@ BIO			*out;
 
 // File streams
 FILE		*file;
-struct stat 	fs_stat;
-char		f_buff[SSLBUF];
+//struct stat 	fs_stat;
+char		f_buff[SSLBUFF];
 
 // ssl_t.c prototypes
 int tcp_socket_con( char *, int );
@@ -86,6 +87,8 @@ int ssl_recv_buffer();
 int ssl_recv_file( char * );
 int ssl_send_file( char * );
 int ssl_send_string( char * );
+int ssl_reply_code( char );
+int ssl_communicate( char );
 
 // oldt.c prototypes
 int set_flag( int );
@@ -96,6 +99,7 @@ int check_args( char, int );
 bool is_arg( char * );
 int parse_args( int, char ** );
 int client_start();
-//int main( int, char ** );
+void init_client();
+void close_client();
 
 #endif /* OLDT_H_ */

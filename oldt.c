@@ -282,8 +282,8 @@ int parse_args( int argc, char **argv )
  **/
 int client_start()
 {
-	char command;
-	char response;
+	//char command;
+	//char response;
 	//char *namelen = malloc(sizeof(char) * 3);
 
 	if( cmd->hostport == NULL || cmd->cert_idt == NULL )
@@ -309,11 +309,8 @@ int client_start()
 
 	if( !ssl_establish_link() )
 	{
-		command = '0' + cmd->command;
 		// Send command to server
-		SSL_write( ssl, &command, 1 );
-		SSL_read( ssl, &response, 1 );
-		BIO_printf( out, "%c\n", response );
+		ssl_communicate( '0' + cmd->command );
 
 		switch( cmd->command )	// Process command
 		{
