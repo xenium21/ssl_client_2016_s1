@@ -251,7 +251,7 @@ int ssl_send_file( char *filename )
 	do
 	{
 		// Read SSLBUF bytes from file to buffer
-		if( (read = fread( f_buff, sizeof(char), SSLBUF, file )) == 0 )
+		if( (read = fread( f_buff, sizeof(char), SSLBUF, file )) < 0 )
 		{
 			BIO_printf( out, "[ERROR] File I/O error for: %s\n", filename );
 			break;
