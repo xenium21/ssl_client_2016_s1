@@ -34,10 +34,10 @@
 #define		SSLBUFF			1024
 #define		SSLCHAR			64
 
-#define		ALOCK			73
-#define		FLOCK			110
-#define		LLOCK			88
-#define		VLOCK			234
+#define		ALOCK			161
+#define		FLOCK			242
+#define		LLOCK			164
+#define		VLOCK			168
 
 #define		SSL_OK			'k'
 #define		SSL_EXISTS		'x'
