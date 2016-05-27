@@ -242,7 +242,7 @@ int parse_args( int argc, char **argv )
 			case 'v':
 				flag = V_OPT;
 				cmd->fname = argv[index+1];
-				cmd->cert_idt = argv[index+2];
+				cmd->cert_vch = argv[index+2];
 				break;
 		}
 
@@ -288,12 +288,13 @@ int client_start()
 		return -1;
 	}
 	
-	if( cmd->command == F_OPT  && (cmd->fname == NULL || cmd->trust_len == NULL || cmd->trust_nam == NULL) )
+	//if( cmd->command == F_OPT  && (cmd->fname == NULL || cmd->trust_len == NULL || cmd->trust_nam == NULL) )
+	if( cmd->command == F_OPT  && cmd->fname == NULL)
 	{
-		BIO_printf( out, "[ERROR] Requires: -f [filename] -c [length] -n [name]\n" );
+		BIO_printf( out, "[ERROR] Requires: -f [filename] (optinal) -c [length] -n [name]\n" );
 		return -1;
 	}
-	else if( cmd->command == V_OPT && cmd->fname == NULL )
+	else if( cmd->command == V_OPT && (cmd->fname == NULL || cmd->cert_vch == NULL ) )
 	{
 		BIO_printf( out, "[ERROR] Requires: -v [filename] [certificate]\n" );
 		return -1;
@@ -306,20 +307,24 @@ int client_start()
 	if( !ssl_establish_link() )
 	{
 		// Send command to server
-		ssl_communicate( '0' + cmd->command );
+		//ssl_communicate( '0' + cmd->command );
 
 		switch( cmd->command )	// Process command
 		{
 			case A_OPT:
+				ssl_communicate( cmd->command );
 				ssl_send_file(cmd->fname);
 				break;
 			case F_OPT:
+				ssl_communicate( cmd->command );
 				ssl_recv_file( cmd->fname );
 				break;
 			case L_OPT:
+				ssl_communicate( cmd->command );
 				//ssl_recv_buffer();
 				break;
 			case V_OPT:
+				ssl_communicate( cmd->command );
 				//ssl_send_string( cmd->fname );
 				break;
 		}

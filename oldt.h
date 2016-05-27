@@ -57,6 +57,7 @@ typedef struct
 	char	*hostport;			// Hostname:Port
 	char	*fname;				// File to add
 	char	*cert_idt;			// Certificate to identify client with
+	char	*cert_vch;			// Vouch cert
 	char	*trust_len;			// Circle-of-trust length
 	char	*trust_nam;			// Circle-of-trust name
 } ARGS;

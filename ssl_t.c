@@ -180,7 +180,7 @@ int ssl_recv_file( char *filename )
 	char reply = 'k';
 
 	// Send filename to server
-	if( ssl_send_string( filename ) == -1) return -1;
+	//if( ssl_send_string( filename ) == -1) return -1;
 
 	// Open file for writing
 	if( (file = fopen( filename, "w" )) == NULL )
@@ -227,9 +227,9 @@ int ssl_send_file( char *filename )
 {
 	size_t read;
 	char reply = 'k';
-
+	BIO_printf( out, "%s\n", filename );
 	// Send filename to server
-	if( ssl_send_string( filename ) == -1) return -1;
+	//if( ssl_send_string( filename ) == -1) return -1;
 
 	// Open file for reading
 	if( (file = fopen( filename, "r" )) == NULL )
@@ -337,6 +337,35 @@ int ssl_reply_code( char code )
 
 int ssl_communicate( char reply )
 {
+	char header[128];
+	char response;
+	int size;
+
+	switch( cmd->command )	// Process command
+	{
+		case A_OPT:
+			size = sprintf( header, "%i,%s,(null),(null)", cmd->command, cmd->fname );
+			break;
+		case F_OPT:
+			size = sprintf( header, "%i,%s,%s,%s", cmd->command, cmd->fname, cmd->trust_len, cmd->trust_nam );
+			break;
+		case L_OPT:
+			size = sprintf( header, "%i,(null),(null),(null)", cmd->command  );
+			break;
+		case V_OPT:
+			size = sprintf( header, "%i,%s,(null),(null)", cmd->command, cmd->cert_vch );
+			break;
+	}
+
+
+	BIO_printf( out, "%s", header );
+
+	SSL_write( ssl, header, size );
+
+	SSL_read( ssl, &response, 1 );
+
+	return ssl_reply_code( response );
+
 	/*char *response = (char *)malloc(sizeof(char) * 14);
 	char *b = (char *)malloc(sizeof(char) * 14);
 	int read = 0;
@@ -357,12 +386,13 @@ int ssl_communicate( char reply )
 
 	BIO_printf(out, "%s\n", b);*/
 
-	//return -1;
-	char response;
+	//return -1; TODO BELOW WORKS
+	
+	/*char response;
 
 	SSL_write( ssl, &reply, 1 );
 
 	SSL_read( ssl, &response, 1 );
 
-	return ssl_reply_code( response );
+	return ssl_reply_code( response );*/
 }
