@@ -82,7 +82,8 @@ BIO		*out;
 // File streams
 FILE		*file;
 //struct stat 	fs_stat;
-char		f_buff[SSLBUFF];
+//char		f_buff[SSLBUFF];
+char *f_buff;
 
 // ssl_t.c prototypes
 int tcp_socket_con( char *, int );

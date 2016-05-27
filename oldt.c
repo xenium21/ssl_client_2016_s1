@@ -345,6 +345,8 @@ void init_client()
 	cmd->command = -1;
 	cmd->argflag = 0;
 	cmd->lock = 0;
+
+	f_buff = malloc(sizeof(char) * SSLBUFF);
 }
 
 /**
@@ -357,7 +359,7 @@ void init_client()
 void close_client()
 {
 	BIO_free_all( cert );
-	
+	// TODO memory not freed?
 	free( cmd );
 }
 

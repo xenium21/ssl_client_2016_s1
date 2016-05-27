@@ -175,7 +175,8 @@ int ssl_recv_buffer()
 
 int ssl_recv_file( char *filename )
 {
-	size_t read;
+	int read = 0;
+	int total;
 	char reply = 'k';
 
 	// Send filename to server
@@ -191,11 +192,17 @@ int ssl_recv_file( char *filename )
 	// Read stream until complete
 	do
 	{
+		total = 0;
 		// Read SSLBUFF bytes from file to buffer TODO no error protection
-		read = SSL_read( ssl, f_buff, SSLBUFF );
-
+		do
+		{
+			read = SSL_read( ssl, (f_buff + total), SSLBUFF );
+			total += read;
+			//BIO_printf( out,"Got: %i bytes\n", read);
+		} while(read);
+		
 		// Write to file
-		if( fwrite( f_buff, sizeof(char), read, file ) != read )
+		if( fwrite( f_buff, sizeof(char), total, file ) != total )
 		{
 			BIO_printf( out, "[ERROR] File I/O error for: %s\n", filename );
 			reply = 'w';
@@ -282,7 +289,7 @@ int ssl_send_string( char *str )
 
 	// TODO Receive a confirmation
 	SSL_read( ssl, &reply, 1 );
-	
+
 	if( reply != 'k' )
 	{
 		BIO_printf( out, "[ERROR] File exists\n" );
@@ -330,9 +337,31 @@ int ssl_reply_code( char code )
 
 int ssl_communicate( char reply )
 {
+	/*char *response = (char *)malloc(sizeof(char) * 14);
+	char *b = (char *)malloc(sizeof(char) * 14);
+	int read = 0;
+	
+	SSL_write( ssl, &reply, 1 );
+
+	BIO_printf(out, "%i\n", SSL_read( ssl, response, 13 ));
+
+	BIO_printf(out, "%s\n", response);
+
+	SSL_write( ssl, &reply, 1 );
+
+	do
+	{
+		read = SSL_read( ssl, (b+read), 13 );
+		BIO_printf(out, "%i\n", read );
+	} while(read);
+
+	BIO_printf(out, "%s\n", b);*/
+
+	//return -1;
 	char response;
 
 	SSL_write( ssl, &reply, 1 );
+
 	SSL_read( ssl, &response, 1 );
 
 	return ssl_reply_code( response );
