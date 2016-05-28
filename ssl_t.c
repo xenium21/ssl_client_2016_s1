@@ -76,15 +76,27 @@ int ssl_start_link( char *hostname, int port, char *certname )
 		return -1;
 	}
 
-	ssl = SSL_new( ctx );
+	if( SSL_CTX_use_PrivateKey_file(ctx, certname, SSL_FILETYPE_PEM) != 1 )
+	{
+		BIO_printf( out, "[ERROR] Private Key: %s is not valid\n", certname );
+		return -1;
+	}
 
-	// Set the users certificate
-	
-	/*if( SSL_use_certificate_file(ssl, certname, SSL_FILETYPE_PEM) != 1 )
+	if( SSL_CTX_check_private_key(ctx) != 1 )
+	{
+		BIO_printf( out, "[ERROR] Bad private key\n" );
+		return -1;
+	}
+
+	/*if( SSL_CTX_use_certificate_chain_file(ctx, certname) != 1 )
 	{
 		BIO_printf( out, "[ERROR] Certificate file: %s is not valid\n", certname );
 		return -1;
 	}*/
+
+	//BIO_printf( out, "%i\n", SSL_CTX_check_private_key( ctx ) );
+
+	ssl = SSL_new( ctx );
 
 	server = tcp_socket_con( hostname, port );
 
@@ -99,7 +111,7 @@ int ssl_establish_link()
 	
 	if( (ret = SSL_connect( ssl )) != 1 )
 	{
-		BIO_printf( out, "[ERROR] SSL Error: %s %i using %s - %s\n", strerror(SSL_get_error(ssl, ret)), ret, SSL_get_version(ssl), SSL_get_cipher_name(ssl) );
+		BIO_printf( out, "[ERROR] SSL Error: %s %i using %s\n", strerror(SSL_get_error(ssl, ret)), ret, SSL_get_version(ssl) );
 		return -1;
 	}
 	else
@@ -108,7 +120,7 @@ int ssl_establish_link()
 	}
 
 	// TODO Obtain server certificate and verify
-	/*if( SSL_get_peer_certificate( ssl ) != NULL )
+	if( SSL_get_peer_certificate( ssl ) != NULL )
 	{
 		if( SSL_get_verify_result( ssl ) != X509_V_OK )
 		{
@@ -120,7 +132,9 @@ int ssl_establish_link()
 	{
 		BIO_printf( out, "[ERROR] Cannot obtain server certificate\n" );
 		return -1;
-	}*/
+	}
+
+	BIO_printf( out, "[CLIENT] Server certificate passed validation\n" );
 
 	return 0;
 }
@@ -181,11 +195,11 @@ int ssl_recv_file( char *filename )
 	char reply = 'k';
 
 	// Open file for writing
-	if( (file = fopen( filename, "w" )) == NULL )
+	/*if( (file = fopen( filename, "w" )) == NULL )
 	{
 		BIO_printf( out, "[ERROR] Cannot create file in the filesystem\n" );
 		return -1;
-	}
+	}*/
 
 	// Read stream until complete
 	do
@@ -206,10 +220,12 @@ int ssl_recv_file( char *filename )
 			reply = 'w';
 			break;
 		}
+		fflush( stdout );
 	} while( read == SSLBUFF );	// Exit if last block is received
 
 	// Close file
-	fclose( file );
+	//fclose( file );
+	fclose( stdout );
 	
 	//ssl_communicate( reply );
 

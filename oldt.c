@@ -28,7 +28,7 @@ int set_flag( int flag )
 	{
 		if( cmd->command > -1 && cmd->command != flag )
 		{
-			BIO_printf( out, "[ERROR] Multiply commands supplied\n" );
+			BIO_printf( out, "[ERROR] Multiple commands supplied\n" );
 			return -1;
 		}
 		else
@@ -307,25 +307,20 @@ int client_start()
 	if( !ssl_establish_link() )
 	{
 		// Send command to server
-		//ssl_communicate( '0' + cmd->command );
 		ssl_communicate( cmd->command );
 
 		switch( cmd->command )	// Process command
 		{
 			case A_OPT:
-				//ssl_communicate( cmd->command );
 				ssl_send_file(cmd->fname);
 				break;
 			case F_OPT:
-				//ssl_communicate( cmd->command );
 				ssl_recv_file( cmd->fname );
 				break;
 			case L_OPT:
-				//ssl_communicate( cmd->command );
 				ssl_recv_buffer();
 				break;
 			case V_OPT:
-				//ssl_communicate( cmd->command );
 				//ssl_send_string( cmd->fname );
 				break;
 		}

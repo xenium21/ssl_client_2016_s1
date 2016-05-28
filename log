@@ -1,6 +1,8 @@
 [CLIENT] Initiating transaction
 [CLIENT] Initiating TCP connection to server
-[ERROR] Connection: Connection refused: 127.0.0.1 on port 1234
-[ERROR] SSL Error: Input/output error -1 using SSLv3 - (NONE)
+[CLIENT] TCP Connection made to: 192.168.1.7:1234
+[CLIENT] Established SSL connection to server
+[ERROR] Certificate verification failed
 [CLIENT] Closing SSL Link
+[CLIENT] Closing TCP connection to server
 [CLIENT] Shutdown
