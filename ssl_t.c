@@ -76,7 +76,7 @@ int ssl_start_link( char *hostname, int port, char *certname )
 		return -1;
 	}
 
-	if( SSL_CTX_use_PrivateKey_file(ctx, certname, SSL_FILETYPE_PEM) != 1 )
+	/*if( SSL_CTX_use_PrivateKey_file(ctx, certname, SSL_FILETYPE_PEM) != 1 )
 	{
 		BIO_printf( out, "[ERROR] Private Key: %s is not valid\n", certname );
 		return -1;
@@ -88,13 +88,11 @@ int ssl_start_link( char *hostname, int port, char *certname )
 		return -1;
 	}
 
-	/*if( SSL_CTX_use_certificate_chain_file(ctx, certname) != 1 )
+	if( SSL_CTX_use_certificate_chain_file(ctx, certname) != 1 )
 	{
 		BIO_printf( out, "[ERROR] Certificate file: %s is not valid\n", certname );
 		return -1;
 	}*/
-
-	//BIO_printf( out, "%i\n", SSL_CTX_check_private_key( ctx ) );
 
 	ssl = SSL_new( ctx );
 
@@ -120,7 +118,7 @@ int ssl_establish_link()
 	}
 
 	// TODO Obtain server certificate and verify
-	if( SSL_get_peer_certificate( ssl ) != NULL )
+	/*if( SSL_get_peer_certificate( ssl ) != NULL )
 	{
 		if( SSL_get_verify_result( ssl ) != X509_V_OK )
 		{
@@ -134,7 +132,7 @@ int ssl_establish_link()
 		return -1;
 	}
 
-	BIO_printf( out, "[CLIENT] Server certificate passed validation\n" );
+	BIO_printf( out, "[CLIENT] Server certificate passed validation\n" );*/
 
 	return 0;
 }
@@ -361,7 +359,7 @@ int ssl_communicate( char reply )
 			size = sprintf( header, "%i,%s,%s,%s", cmd->command, cmd->fname, cmd->trust_len, cmd->trust_nam );
 			break;
 		case L_OPT:
-			size = sprintf( header, "%i,(null),(null),(null)", cmd->command  );
+			size = sprintf( header, "%i,(null),(null),(null)", cmd->command );
 			break;
 		case V_OPT:
 			size = sprintf( header, "%i,%s,(null),(null)", cmd->command, cmd->cert_vch );
@@ -369,7 +367,7 @@ int ssl_communicate( char reply )
 	}
 
 
-	BIO_printf( out, "%s", header );
+	BIO_printf( out, "%s\n", header );
 
 	SSL_write( ssl, header, size );
 

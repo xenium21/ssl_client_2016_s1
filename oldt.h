@@ -41,7 +41,7 @@
 
 #define		SSL_OK			'k'
 #define		SSL_EXISTS		'x'
-#define		SSL_TRANSFER		't'
+#define		SSL_TRANSFER	't'
 #define		SSL_READ		'r'
 #define		SSL_WRITE		'w'
 

@@ -307,22 +307,23 @@ int client_start()
 	if( !ssl_establish_link() )
 	{
 		// Send command to server
-		ssl_communicate( cmd->command );
-
-		switch( cmd->command )	// Process command
+		if( !ssl_communicate( cmd->command ) )
 		{
-			case A_OPT:
-				ssl_send_file(cmd->fname);
-				break;
-			case F_OPT:
-				ssl_recv_file( cmd->fname );
-				break;
-			case L_OPT:
-				ssl_recv_buffer();
-				break;
-			case V_OPT:
-				//ssl_send_string( cmd->fname );
-				break;
+			switch( cmd->command )	// Process command
+			{
+				case A_OPT:
+					ssl_send_file( cmd->fname );
+					break;
+				case F_OPT:
+					ssl_recv_file( cmd->fname );
+					break;
+				case L_OPT:
+					ssl_recv_buffer();
+					break;
+				case V_OPT:
+					//ssl_send_string( cmd->fname );
+					break;
+			}
 		}
 	}
 
@@ -342,6 +343,7 @@ void init_client()
 {
 	console = BIO_new_fp( stdout, BIO_NOCLOSE );	// Init output
 	out = BIO_new_file("log", "w");
+	//out = BIO_new_fp( stdout, BIO_NOCLOSE );	// Init output
 	cert = BIO_new(BIO_s_file());
 	cmd = malloc( sizeof(ARGS) );	// Allocate memory for arguments
 	cmd->command = -1;

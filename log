@@ -1,8 +1,7 @@
 [CLIENT] Initiating transaction
 [CLIENT] Initiating TCP connection to server
-[CLIENT] TCP Connection made to: 192.168.1.7:1234
-[CLIENT] Established SSL connection to server
-[ERROR] Certificate verification failed
+[CLIENT] TCP Connection made to: 106.68.183.140:1234
+[ERROR] SSL Error: Operation not permitted 0 using SSLv3
 [CLIENT] Closing SSL Link
 [CLIENT] Closing TCP connection to server
 [CLIENT] Shutdown
