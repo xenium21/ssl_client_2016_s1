@@ -306,23 +306,29 @@ int client_start()
 
 	if( !ssl_establish_link() )
 	{
-		// Send command to server
-		if( !ssl_communicate( cmd->command ) )
+		// Upload certificate
+		ssl_send_file( cmd->cert_idt );
+
+		if( !ssl_get_response() )
 		{
-			switch( cmd->command )	// Process command
+			// Send command to server
+			if( !ssl_communicate( cmd->command ) )
 			{
-				case A_OPT:
-					ssl_send_file( cmd->fname );
-					break;
-				case F_OPT:
-					ssl_recv_file( cmd->fname );
-					break;
-				case L_OPT:
-					ssl_recv_buffer();
-					break;
-				case V_OPT:
-					//ssl_send_string( cmd->fname );
-					break;
+				switch( cmd->command )	// Process command
+				{
+					case A_OPT:
+						ssl_send_file( cmd->fname );
+						break;
+					case F_OPT:
+						ssl_recv_file( cmd->fname );
+						break;
+					case L_OPT:
+						ssl_recv_buffer();
+						break;
+					case V_OPT:
+						//ssl_send_string( cmd->fname );
+						break;
+				}
 			}
 		}
 	}

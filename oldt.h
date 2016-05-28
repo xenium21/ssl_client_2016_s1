@@ -98,6 +98,7 @@ int ssl_send_file( char * );
 int ssl_send_string( char * );
 int ssl_reply_code( char );
 int ssl_communicate( char );
+int ssl_get_response();
 
 // oldt.c prototypes
 int set_flag( int );

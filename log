@@ -1,7 +1,10 @@
 [CLIENT] Initiating transaction
 [CLIENT] Initiating TCP connection to server
 [CLIENT] TCP Connection made to: 106.68.183.140:1234
-[ERROR] SSL Error: Operation not permitted 0 using SSLv3
+[CLIENT] Established SSL connection to server
+Sent: 818 bytes
+[CLIENT] Sent file: test.pem to server
+2,(null),(null),(null)
 [CLIENT] Closing SSL Link
 [CLIENT] Closing TCP connection to server
 [CLIENT] Shutdown
