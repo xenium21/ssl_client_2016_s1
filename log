@@ -2,8 +2,9 @@
 [CLIENT] Initiating TCP connection to server
 [CLIENT] TCP Connection made to: 106.68.183.140:1234
 [CLIENT] Established SSL connection to server
-[CLIENT] Successfully sent file to the server
-[ERROR] Unknown response:  from server. Halting
+[CLIENT] Successfully sent file: A.pem the server
+2,(null),(null),(null)
+[CLIENT] Successfully received file to the server
 [CLIENT] Closing SSL Link
 [CLIENT] Closing TCP connection to server
 [CLIENT] Shutdown

@@ -17,6 +17,10 @@ Operation:
 	Listing and fetching both output to the stdout stream.
 	So piping the fetch is important.
 
+	Certificates must be placed in the working directory of the client, and not in a folder.
+
+	Certificates must be in the PEM format.
+
 Commands:
 	Add
 	./oldtrusty -u client.pem -h ipv4:port -a file

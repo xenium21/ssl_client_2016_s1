@@ -1,9 +1,10 @@
-/*
+/**
  * ssl_t.c
  *
- *  Created on: May 9, 2016
- *      Author: Noah Macri (21315211)
- */
+ * Created on: May 9, 2016
+ * Last Revision: May 29, 2016 
+ * Author: Noah Macri (21315211)
+ **/
 #include "oldt.h"
 
 /**
@@ -85,7 +86,6 @@ int ssl_start_link( char *hostname, int port, char *certname )
 	}
 
 	if( SSL_CTX_use_certificate_file(ctx, certname, SSL_FILETYPE_PEM) != 1 )
-	//if( SSL_CTX_load_verify_locations(ctx, NULL, "/") != 1 )
 	{
 		BIO_printf( out, "[ERROR] Certificate file: %s is not valid\n", certname );
 		return -1;
@@ -279,7 +279,7 @@ int ssl_send_file( char *filename )
 
 	if( ok )
 	{
-		BIO_printf( out, "[CLIENT] Successfully sent file to the server\n" );
+		BIO_printf( out, "[CLIENT] Successfully sent file: %s the server\n", filename );
 	}
 	else
 	{
@@ -356,7 +356,7 @@ int ssl_reply_code( char code )
 			ret = -1;
 			break;
 		case SSL_EXISTS:
-			BIO_printf( out, "[ERROR] File already exists on server\n" );
+			BIO_printf( out, "[ERROR] File already exists on or it is not owned by you\n" );
 			ret = -1;
 			break;
 		default:

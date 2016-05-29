@@ -1,12 +1,11 @@
 /**
  * oldt.c
  *
- *  Created on: May 9, 2016
- *      Author: Noah Macri (21315211)
+ * Created on: May 9, 2016
+ * Last Revision: May 29, 2016 
+ * Author: Noah Macri (21315211)
  **/
 #include "oldt.h"
-
-// TODO Implement function to check servers certificate
 
 /**
  * Function: set_flag

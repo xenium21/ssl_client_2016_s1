@@ -1,9 +1,10 @@
-/*
+/**
  * oldt.h
  *
- *  Created on: May 9, 2016
- *      Author: Noah Macri (21315211)
- */
+ * Created on: May 9, 2016
+ * Last Revision: May 29, 2016 
+ * Author: Noah Macri (21315211)
+ **/
 
 #ifndef OLDT_H_
 #define OLDT_H_
@@ -45,7 +46,6 @@
 #define		SSL_READ		'r'
 #define		SSL_CERT		'c'
 
-//typedef enum { A_OPT, C_OPT, F_OPT, H_OPT, L_OPT, N_OPT, U_OPT, V_OPT } ARGFLAG;
 typedef enum { A_OPT, F_OPT, L_OPT, V_OPT, C_OPT, H_OPT, N_OPT, U_OPT } ARGFLAG;
 
 // Structs
