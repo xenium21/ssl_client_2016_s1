@@ -320,10 +320,11 @@ int client_start()
 						ssl_send_file( cmd->fname );
 						break;
 					case F_OPT:
-						ssl_recv_file( cmd->fname );
+						ssl_recv_file();
 						break;
 					case L_OPT:
-						ssl_recv_buffer();
+						//ssl_recv_buffer();
+						ssl_recv_file();
 						break;
 					case V_OPT:
 						//ssl_send_string( cmd->fname );

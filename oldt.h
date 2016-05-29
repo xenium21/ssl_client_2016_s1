@@ -43,7 +43,7 @@
 #define		SSL_EXISTS		'x'
 #define		SSL_TRANSFER	't'
 #define		SSL_READ		'r'
-#define		SSL_WRITE		'w'
+#define		SSL_CERT		'c'
 
 //typedef enum { A_OPT, C_OPT, F_OPT, H_OPT, L_OPT, N_OPT, U_OPT, V_OPT } ARGFLAG;
 typedef enum { A_OPT, F_OPT, L_OPT, V_OPT, C_OPT, H_OPT, N_OPT, U_OPT } ARGFLAG;
@@ -93,7 +93,7 @@ int ssl_start_link( char *, int, char * );
 int ssl_establish_link();
 int ssl_close_link();
 int ssl_recv_buffer();
-int ssl_recv_file( char * );
+int ssl_recv_file();
 int ssl_send_file( char * );
 int ssl_send_string( char * );
 int ssl_reply_code( char );
