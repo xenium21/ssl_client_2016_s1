@@ -288,7 +288,6 @@ int client_start()
 		return -1;
 	}
 	
-	//if( cmd->command == F_OPT  && (cmd->fname == NULL || cmd->trust_len == NULL || cmd->trust_nam == NULL) )
 	if( cmd->command == F_OPT  && cmd->fname == NULL)
 	{
 		BIO_printf( out, "[ERROR] Requires: -f [filename] (optinal) -c [length] -n [name]\n" );
@@ -323,11 +322,10 @@ int client_start()
 						ssl_recv_file();
 						break;
 					case L_OPT:
-						//ssl_recv_buffer();
 						ssl_recv_file();
 						break;
 					case V_OPT:
-						//ssl_send_string( cmd->fname );
+						ssl_send_file( cmd->cert_vch );
 						break;
 				}
 			}

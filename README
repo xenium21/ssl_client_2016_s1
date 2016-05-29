@@ -1,0 +1,36 @@
+CITS3002 Project - Oldtrusty client
+Author: Noah Macri (21315211)
+
+Implemented in C
+
+Compiled on:
+	RHEL 7 - UWA Computer Labs
+	Debian 8.4 (gcc 4.9.2, openssl 1.0.1k)
+
+Operation:
+	Use the supplied Makefile to compile the client.
+
+	Only one command is allowed in the arguments supplied (add, fetch, list, vouch).
+
+	Client and error logs are dumped to the file: log
+
+	Listing and fetching both output to the stdout stream.
+	So piping the fetch is important.
+
+Commands:
+	Add
+	./oldtrusty -u client.pem -h ipv4:port -a file
+
+	Fetch
+	./oldtrusty -u client.pem -h ipv4:port -f file -c number* -n name*
+
+	List
+	./oldtrusty -u client.pem -h ipv4:port -l
+
+	Vouch
+	./oldtrusty -u client.pem -h ipv4:port -v filename vouch.pem
+	
+	*Denotes optional commands
+
+Known errors:
+	Issuing a certificate that does not exist may cause a segmentation fault.

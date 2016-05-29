@@ -9,7 +9,7 @@
 /**
  * Function: tcp_socket_con
  * 
- * Initialises a socket as well as a TCP connection to the host using the common UNIX libraries.
+ * Initialises a socket as well as a TCP connection to the host using UNIX sockets.
  *
  * Returns: TCP socket on success, -1 on failure.
  **/
@@ -41,6 +41,8 @@ int tcp_socket_con( char *hostname, int port )
 	dest_addr.sin_addr.s_addr = *(long *)(host->h_addr);
 
 	memset( &(dest_addr.sin_zero), '\0', 8 );
+
+	BIO_flush( out );	// Flush log if connect timesout
 
 	if( connect(sockfd, (struct sockaddr *) &dest_addr, sizeof(struct sockaddr)) != 0 )
 	{
@@ -83,6 +85,7 @@ int ssl_start_link( char *hostname, int port, char *certname )
 	}
 
 	if( SSL_CTX_use_certificate_file(ctx, certname, SSL_FILETYPE_PEM) != 1 )
+	//if( SSL_CTX_load_verify_locations(ctx, NULL, "/") != 1 )
 	{
 		BIO_printf( out, "[ERROR] Certificate file: %s is not valid\n", certname );
 		return -1;
@@ -158,7 +161,7 @@ int ssl_close_link()
  * 
  * Receives a stream of data over an SSL connection and writes it to the stdout stream.
  *
- * Obsolete
+ * Obsolete TODO
  *
  * Returns: 0 on success.
  **/
@@ -199,6 +202,7 @@ int ssl_recv_file()
 {
 	int read = 0;
 	int total;
+	bool ok = true;
 
 	// Read stream until complete
 	do
@@ -215,6 +219,7 @@ int ssl_recv_file()
 		if( fwrite( f_buff, sizeof(char), total, stdout ) != total )
 		{
 			BIO_printf( out, "[ERROR] File I/O error\n" );
+			ok = false;
 			break;
 		}
 		fflush( stdout );
@@ -222,6 +227,15 @@ int ssl_recv_file()
 
 	// Close file TODO may not need
 	fclose( stdout );
+
+	if( ok )
+	{
+		BIO_printf( out, "[CLIENT] Successfully received file to the server\n" );
+	}
+	else
+	{
+		BIO_printf( out, "[ERROR] An error occurred writing to the file\n" );
+	}
 
 	return 0;
 }
@@ -235,7 +249,8 @@ int ssl_recv_file()
  **/
 int ssl_send_file( char *filename )
 {
-	size_t read;
+	int read;
+	bool ok = true;
 
 	// Open file for reading
 	if( (file = fopen( filename, "r" )) == NULL )
@@ -253,14 +268,24 @@ int ssl_send_file( char *filename )
 		if( SSL_write(ssl, f_buff, read) != read )
 		{
 			BIO_printf( out, "[ERROR] Problem writing to SSL connection\n" );
+			ok = false;
 			break;
 		}
 		//BIO_printf( out,"Sent: %i bytes\n" , (int)read );
 	} while( read == SSLBUFF );
 
 	// Close file
-	fclose( file );
-	
+	fclose( file );	
+
+	if( ok )
+	{
+		BIO_printf( out, "[CLIENT] Successfully sent file to the server\n" );
+	}
+	else
+	{
+		BIO_printf( out, "[ERROR] An error occurred writing to the connection\n" );
+	}
+
 	return 0;
 }
 
@@ -269,7 +294,7 @@ int ssl_send_file( char *filename )
  * 
  * Sends a 64 character string over an SSL connection.
  *
- * Obsolete
+ * Obsolete TODO
  *
  * Returns: Void.
  **/
@@ -372,6 +397,8 @@ int ssl_communicate( char reply )
 			break;
 	}
 
+	BIO_printf( out, "%s\n", header );
+
 	SSL_write( ssl, header, size );
 
 	SSL_read( ssl, &response, 1 );
@@ -394,3 +421,5 @@ int ssl_get_response()
 
 	return ssl_reply_code( response );
 }
+
+
